@@ -37,21 +37,23 @@ Ce projet constitue le backend d'une application e-commerce qui fait parti du te
 ## Installation
 
 1. Clonez le dépôt :
-
    ```bash
    git clone https://github.com/akram-idrissi/Nutritechagro-Test-Backend.git
    cd Nutritechagro-Test-Backend
    ```
+
 2. Créez un environnement virtuel et activez-le :
   ```python
   python3 -m venv venv
   source venv/bin/activate  # Pour Linux/Mac
   venv\Scripts\activate
   ```
+
 3. Installez les dépendances :
   ```bash
   pip install -r requirements.txt
   ```
+
 4. Appliquez les migrations :
   ```
   python manage.py migrate
