@@ -1,4 +1,4 @@
-from .models import Product
+from .models import Product, Order
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'email']
+        fields = ['id','username', 'password', 'email']
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -39,3 +39,13 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+    createdAt = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'email', 'orderID', 'price', 'status', 'createdAt']
+    
+    def get_createdAt(self, obj):
+        return obj.createdAt.strftime("%B %d, %Y %H:%M:%S")

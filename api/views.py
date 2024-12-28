@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate
@@ -6,9 +8,11 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Product, Order
+from .serializers import ProductSerializer, OrderSerializer
 from .serializers import ProductSerializer, UserSerializer
 
 
@@ -30,7 +34,8 @@ class SignInAPIView(APIView):
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
         if user:
-            return Response({"message": "Sign-in successful."}, status=status.HTTP_200_OK)
+            serializer = UserSerializer(user)
+            return Response({"message": "Sign-in successful.", "user": serializer.data}, status=status.HTTP_200_OK)
         return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
 class ProductDetailAPIView(APIView):
@@ -82,3 +87,31 @@ class ResetPasswordAPIView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+
+class CheckoutAPIView(APIView):
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        return Response({"message": "Checkout successful."}, status=status.HTTP_200_OK)
+
+class AddOrderAPIView(APIView):
+
+    def post(self, request):
+        data = request.data
+        data['orderID'] = str(uuid.uuid4()) 
+        data['status'] = 'success'
+        data['user'] = data['id']
+        serializer = OrderSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserOrdersAPIView(APIView):
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        orders = Order.objects.filter(user=id)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
