@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import SignUpAPIView, SignInAPIView, ProductDetailAPIView, ProductsByCategoryAPIView, ResetPasswordAPIView, CheckoutAPIView, AddOrderAPIView, UserOrdersAPIView
+from .views import SignUpAPIView, SignInAPIView, ProductDetailAPIView, ProductsByCategoryAPIView, ResetPasswordAPIView, CheckoutAPIView, AddOrderAPIView, UserOrdersAPIView, SimilarProductsAPIView
 
 urlpatterns = [
     path('signup/', SignUpAPIView.as_view(), name='signup'),
     path('signin/', SignInAPIView.as_view(), name='signin'),
     path('products/<int:id>/', ProductDetailAPIView.as_view(), name='product-detail'),
+    path('similar-products/<str:category_name>/<int:product_id>', SimilarProductsAPIView.as_view(), name='similar-products'),
     path('categories/<str:name>/', ProductsByCategoryAPIView.as_view(), name='products-by-category'),
     path('reset-password/', ResetPasswordAPIView.as_view(), name='reset-password'),
     path('checkout/', CheckoutAPIView.as_view(), name='checkout'),
