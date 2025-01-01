@@ -60,6 +60,15 @@ class ProductsByCategoryAPIView(APIView):
             "current_page": page_obj.number
         }, status=status.HTTP_200_OK)
 
+class SimilarProductsAPIView(APIView):
+    def get(self, request, category_name, product_id):
+        similar_products = Product.objects.filter(category=category_name).exclude(id=product_id)[:10]
+        serializer = ProductSerializer(similar_products, many=True)
+        return Response({
+            "products": serializer.data,
+            "total_products": len(similar_products),
+        }, status=status.HTTP_200_OK)
+
 class ResetPasswordAPIView(APIView):
     permission_classes = [AllowAny]
 
